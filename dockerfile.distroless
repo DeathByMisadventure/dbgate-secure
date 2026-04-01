@@ -1,4 +1,12 @@
-# 24 CVE
+# =============================================================================
+# DbGate Secure - Distroless Node.js Edition
+# =============================================================================
+# This image provides a minimal, secure runtime for dbgate-serve using
+# Distroless Node.js images (very low CVE count).
+#
+# Build with:
+#   docker build -f Dockerfile.distroless -t dbgate-secure:latest-distroless .
+# =============================================================================
 
 # -------------------------------
 # Stage 1: Build/install dependencies (uses -dev variant)
@@ -15,16 +23,24 @@ RUN npm install dbgate-serve@latest --production \
 RUN ln -s /app/node_modules/dbgate-serve/bin/dbgate-serve.js /app/dbgate-serve \
   && chmod +x /app/dbgate-serve && \
   mkdir -p /tmp/.dbgate
+
 # -------------------------------
 # Stage 2: Minimal runtime (production image)
 # -------------------------------
 FROM gcr.io/distroless/nodejs22-debian12:nonroot
 
+LABEL org.opencontainers.image.title="dbgate-secure (Distroless edition)" \
+      org.opencontainers.image.description="Secure, minimal Docker image for DbGate database manager (dbgate-serve) using Distroless Node" \
+      org.opencontainers.image.source="https://github.com/DeathByMisadventure/dbgate-secure" \
+      org.opencontainers.image.url="https://github.com/DeathByMisadventure/dbgate-secure" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.vendor="DeathByMisadventure"
+
 WORKDIR /app
 
 # Copy only the installed node_modules + symlink
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dbgate-serve /app/dbgate-serve
+COPY --from=builder --chown=65532:65532 /app/node_modules ./node_modules
+COPY --from=builder --chown=65532:65532 /app/dbgate-serve /app/dbgate-serve
 COPY --from=builder --chown=65532:65532 /tmp/.dbgate /tmp/.dbgate
 
 # Chainguard node images are non-root by default

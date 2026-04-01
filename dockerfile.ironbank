@@ -1,5 +1,15 @@
+# =============================================================================
+# DbGate Secure - IronBank Node.js Edition
+# =============================================================================
+# This image provides a minimal, secure runtime for dbgate-serve using
+# IronBank Node.js images (lower CVE count).
+#
+# Build with:
+#   docker build -f Dockerfile.ironbank -t dbgate-secure:latest-ironbank .
+# =============================================================================
+
 # -------------------------------
-# Stage 1: Builder (install dependencies)
+# Stage 1: Build/install dependencies (uses -dev variant)
 # -------------------------------
 FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs22:latest AS builder
 
@@ -18,6 +28,13 @@ RUN ln -s /app/node_modules/dbgate-serve/bin/dbgate-serve.js /app/dbgate-serve \
 # Stage 2: Runtime
 # -------------------------------
 FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs22:latest
+
+LABEL org.opencontainers.image.title="dbgate-secure (Ironbank edition)" \
+      org.opencontainers.image.description="Secure, minimal Docker image for DbGate database manager (dbgate-serve) using IronBank Node" \
+      org.opencontainers.image.source="https://github.com/DeathByMisadventure/dbgate-secure" \
+      org.opencontainers.image.url="https://github.com/DeathByMisadventure/dbgate-secure" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.vendor="DeathByMisadventure"
 
 USER root
 
@@ -46,4 +63,4 @@ ENV NODE_ENV=production \
 EXPOSE 3000
 
 # Clean startup using the symlink
-CMD ["/app/dbgate-serve"]
+CMD ["dbgate-serve"]

@@ -47,7 +47,7 @@ docker build -f dockerfile.chainguard -t dbgate:chainguard .
 docker build -f dockerfile.distroless -t dbgate:distroless .
 ```
 
-### 3. Iron Bank (Requires )
+### 3. Iron Bank (Requires Ironbank Access)
 
 ```bash
 docker build -f dockerfile.ironbank -t dbgate:ironbank .
@@ -69,7 +69,7 @@ docker run -d \
   # or: dbgate:ironbank
 ```
 
-Then open **http://localhost:3000** in your browser.
+Then open **<http://localhost:3000>** in your browser.
 
 ### Using with PostgreSQL (for testing)
 

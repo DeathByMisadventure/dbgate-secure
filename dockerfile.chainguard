@@ -1,4 +1,12 @@
-# 20 CVE
+# =============================================================================
+# DbGate Secure - Chainguard Node.js Edition
+# =============================================================================
+# This image provides a minimal, secure runtime for dbgate-serve using
+# Chainguard Wolfi-based Node.js images (very low CVE count).
+#
+# Build with:
+#   docker build -f Dockerfile.chainguard -t dbgate-secure:latest-chainguard .
+# =============================================================================
 
 # -------------------------------
 # Stage 1: Build/install dependencies (uses -dev variant)
@@ -9,27 +17,31 @@ WORKDIR /app
 
 # Install dbgate-serve (production only)
 RUN npm install dbgate-serve@latest --production \
-  && npm cache clean --force \
-  && npm update \
   && npm cache clean --force
 
 # Create symlink for easy startup
 RUN ln -s /app/node_modules/dbgate-serve/bin/dbgate-serve.js /app/dbgate-serve \
-  && chmod +x /app/dbgate-serve
+  && chmod +x /app/dbgate-serve && \
+  mkdir -p /tmp/.dbgate
 
 # -------------------------------
 # Stage 2: Minimal runtime (production image)
 # -------------------------------
 FROM cgr.dev/chainguard/node:latest
 
+LABEL org.opencontainers.image.title="dbgate-secure (Chainguard edition)" \
+      org.opencontainers.image.description="Secure, minimal Docker image for DbGate database manager (dbgate-serve) using Chainguard Node" \
+      org.opencontainers.image.source="https://github.com/DeathByMisadventure/dbgate-secure" \
+      org.opencontainers.image.url="https://github.com/DeathByMisadventure/dbgate-secure" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.vendor="DeathByMisadventure"
+
 WORKDIR /app
 
 # Copy only the installed node_modules + symlink
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dbgate-serve /app/dbgate-serve
-
-# Create writable config directory (DbGate stores connections here)
-RUN mkdir -p /tmp/.dbgate
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /app/dbgate-serve /app/dbgate-serve
+COPY --from=builder --chown=node:node /tmp/.dbgate /tmp/.dbgate
 
 # Chainguard node images are non-root by default
 ENV NODE_ENV=production \
