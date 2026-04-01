@@ -1,0 +1,49 @@
+# -------------------------------
+# Stage 1: Builder (install dependencies)
+# -------------------------------
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs22:latest AS builder
+
+WORKDIR /app
+
+# Install only production dependencies
+RUN npm install dbgate-serve@latest --production \
+  && npm cache clean --force
+
+# Create symlink for clean startup
+RUN ln -s /app/node_modules/dbgate-serve/bin/dbgate-serve.js /app/dbgate-serve \
+  && chmod +x /app/dbgate-serve \
+  && mkdir -p /tmp/.dbgate
+
+# -------------------------------
+# Stage 2: Runtime
+# -------------------------------
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs22:latest
+
+USER root
+
+# Install minimal runtime OS dependencies
+RUN microdnf install -y \
+  iproute \
+  && microdnf clean all
+
+WORKDIR /app
+
+# Copy only the necessary files from the builder stage
+COPY --from=builder --chown=1001:0 /app/node_modules ./node_modules
+COPY --from=builder --chown=1001:0 /app/dbgate-serve ./dbgate-serve
+COPY --from=builder --chown=1001:0 /tmp/.dbgate /tmp/.dbgate
+
+# Drop privileges
+USER 1001
+
+# Environment variables
+ENV NODE_ENV=production \
+  PORT=3000 \
+  HOME=/tmp \
+  XDG_CONFIG_HOME=/tmp \
+  XDG_DATA_HOME=/tmp
+
+EXPOSE 3000
+
+# Clean startup using the symlink
+CMD ["/app/dbgate-serve"]
