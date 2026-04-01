@@ -19,8 +19,13 @@ Chainguard currently gives the best security posture with the lowest number of C
 
 ## Pulling the images
 
-- `docker pull ghcr.io/deathbymisadventure/dbgate-secure:latest-chainguard`
-- `docker pull ghcr.io/deathbymisadventure/dbgate-secure:latest-distroless`
+```bash
+docker pull ghcr.io/deathbymisadventure/dbgate-secure:latest-chainguard`
+```
+
+```bash
+docker pull ghcr.io/deathbymisadventure/dbgate-secure:latest-distroless`
+```
 
 ## Available Dockerfiles
 
@@ -42,7 +47,7 @@ docker build -f dockerfile.chainguard -t dbgate:chainguard .
 docker build -f dockerfile.distroless -t dbgate:distroless .
 ```
 
-### 3. Iron Bank
+### 3. Iron Bank (Requires )
 
 ```bash
 docker build -f dockerfile.ironbank -t dbgate:ironbank .
@@ -59,8 +64,8 @@ docker run -d \
   -v dbgate-data:/tmp/.dbgate \
   -e LOGIN=admin \
   -e PASSWORD=YourStrongPasswordHere! \
-  dbgate:chainguard
-  # or: dbgate:distroless
+  ghcr.io/deathbymisadventure/dbgate-secure:latest-chainguard
+  # or: ghcr.io/deathbymisadventure/dbgate-secure:latest-distroless
   # or: dbgate:ironbank
 ```
 
