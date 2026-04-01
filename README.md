@@ -17,6 +17,11 @@ To utilize Ironbank images a sign on is required.
 **Summary**:
 Chainguard currently gives the best security posture with the lowest number of CVEs while remaining practical.
 
+## Pulling the images
+
+- `docker pull ghcr.io/deathbymisadventure/dbgate-secure:latest-chainguard`
+- `docker pull ghcr.io/deathbymisadventure/dbgate-secure:latest-distroless`
+
 ## Available Dockerfiles
 
 - `[dockerfile.chainguard](./dockerfile.chainguard)`     - Builds `dbgate:chainguard`
