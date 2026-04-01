@@ -57,7 +57,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile.${{ matrix.variant }}   # e.g. Dockerfile.chainguard
+          file: ./dockerfile.${{ matrix.variant }}   # e.g. Dockerfile.chainguard
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
